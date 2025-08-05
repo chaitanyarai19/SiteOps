@@ -17,6 +17,7 @@ const Tickets = () => {
       const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:5000/api/tickets", {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setTickets(res.data);
     } catch (err) {
@@ -29,6 +30,7 @@ const Tickets = () => {
       const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:5000/api/sites", {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setSites(res.data);
     } catch (err) {
@@ -69,6 +71,7 @@ const handleChange = (e) => {
       const token = localStorage.getItem("token");
       const res = await axios.post("http://localhost:5000/api/tickets", formData, {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       console.log("Ticket submitted:", res.data);
       setFormData({ title: "", site: "", description: "" });
@@ -83,6 +86,7 @@ const handleChange = (e) => {
       const token = localStorage.getItem("token");
       await axios.delete(`http://localhost:5000/api/tickets/${ticketId}`, {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       fetchTickets();
     } catch (err) {
