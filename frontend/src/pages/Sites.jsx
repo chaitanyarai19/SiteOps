@@ -19,6 +19,7 @@ const Sites = () => {
       const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:5000/api/sites", {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setSites(res.data);
     } catch {
@@ -54,10 +55,12 @@ useEffect(() => {
       if (editId) {
         await axios.put(`http://localhost:5000/api/sites/${editId}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
         });
       } else {
         await axios.post("http://localhost:5000/api/sites", formData, {
           headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
         });
       }
 
@@ -84,6 +87,7 @@ useEffect(() => {
     try {
       await axios.delete(`http://localhost:5000/api/sites/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       fetchSites();
     } catch {

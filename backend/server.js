@@ -3,11 +3,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-
+const cookieParser = require('cookie-parser');
 
 const app = express();
-app.use(cors());
+
+// 1. Always first
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
+
+// 2. Then parsers
+app.use(cookieParser());
 app.use(express.json());
+
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -26,14 +35,7 @@ const dashboardRouter = require('./routes/dashboard');
 const uploadRoutes = require("./routes/uploadRoutes");
 const userRoutes = require('./routes/users');
 const filesRoutes = require("./routes/filesRoutes");
-const cookieParser = require("cookie-parser");
 
-app.use(cookieParser());
-
-app.use(cors({
-  origin: "http://localhost:5173", // your React frontend
-  credentials: true,               // allow cookies
-}));
 
 app.use('/api/users', userRoutes);
 app.use('/api/sites', sitesRouter);
@@ -44,6 +46,21 @@ app.use("/api/files", filesRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/upload", uploadRoutes);
+
+
+/**
+ * Test route for you to check and configure cookies 
+ */
+app.get('/test', (req, res) => {
+  console.log(req.cookies); 
+  res.cookie('empID', 'EMP12345', {
+    httpOnly: false,
+    secure: false,
+    sameSite: 'Lax',
+    maxAge: 24 * 60 * 60 * 1000
+  });
+  res.json({ message: 'Cookie set!' });
+});
 
 app.get("/api/files", async (req, res) => {
   const files = await db.collection("uploads").find().toArray(); // Adjust collection name
