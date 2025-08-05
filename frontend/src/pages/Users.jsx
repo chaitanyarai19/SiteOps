@@ -12,6 +12,7 @@ const Users = () => {
     try {
       const res = await axios.get("http://localhost:5000/api/users", {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       setUsers(res.data);
     } catch (err) {
@@ -47,7 +48,8 @@ const Users = () => {
         { role: newRole },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+          withCredentials: true,
+        },
       );
       fetchUsers();
     } catch {
@@ -60,6 +62,7 @@ const Users = () => {
     try {
       await axios.delete(`http://localhost:5000/api/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
       });
       fetchUsers();
     } catch {

@@ -14,7 +14,7 @@ const FileUploader = () => {
 
   // Fetch site list
   useEffect(() => {
-    fetch("http://localhost:5000/api/sites")
+    fetch("http://localhost:5000/api/sites",{method:"GET",credentials: 'include'})
       .then((res) => res.json())
       .then((data) => setSites(data))
       .catch((err) => {
@@ -25,7 +25,7 @@ const FileUploader = () => {
 
   // Fetch uploaded files
   useEffect(() => {
-    fetch("http://localhost:5000/api/files")
+    fetch("http://localhost:5000/api/files",{method:"GET",credentials: 'include'})
       .then((res) => res.json())
       .then((data) => setUploadedFiles(data))
       .catch((err) => {
