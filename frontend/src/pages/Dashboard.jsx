@@ -19,7 +19,7 @@ const Dashboard = () => {
 
       try {
         const token = localStorage.getItem("token");
-        const config = { headers: { Authorization: `Bearer ${token}` },withCredentials: true };
+        const config = { headers: { Authorization: `Bearer ${token}` } };
 
         // Fetch all counts in parallel
         const [sitesRes, ticketsRes, usersRes, filesRes] = await Promise.all([
