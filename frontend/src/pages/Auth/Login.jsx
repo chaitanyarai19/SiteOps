@@ -1,73 +1,76 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
-import axios from 'axios';
+// src/pages/Auth/Login.jsx
+import { useContext, useState } from "react";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const { setUser } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login form submitted with:", { email, password });
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
-        email,
-        password,
-      });
+    setError("");
 
-      if (res.data) {
-        // localStorage.setItem('token', res.data.token);
-        setUser(res.data.user);
-        console
-        if (res.data.user.role === 'admin') {
-          navigate('/dashboard');
-        } else {
-          navigate('/sites');
-        }
-      }
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", formData); // Update this if your backend URL is different
+      const { user, token } = res.data;
+      login(user, token);
+      
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      console.error("Login error: ", err);
+      setError(
+        err?.response?.data?.error || "Login failed. Please try again."
+      );
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-96"
+        className="bg-white p-6 rounded shadow-md w-96"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        <h2 className="text-xl font-semibold mb-4">Login</h2>
+
+        {error && (
+          <div className="mb-3 text-red-600 bg-red-100 px-3 py-1 rounded">
+            {error}
+          </div>
+        )}
 
         <input
           type="email"
+          name="email"
           placeholder="Email"
-          className="w-full p-2 border rounded mb-4"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full mb-3 p-2 border border-gray-300 rounded"
           required
         />
-
         <input
           type="password"
+          name="password"
           placeholder="Password"
-          className="w-full p-2 border rounded mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full mb-3 p-2 border border-gray-300 rounded"
           required
         />
-
         <button
           type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           Login
         </button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
     </div>
   );

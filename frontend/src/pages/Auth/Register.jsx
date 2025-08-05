@@ -11,6 +11,7 @@ const Register = () => {
     email: "",
     password: "",
     role: "developer", // default role
+    employeeId: "",
   });
 
   const [error, setError] = useState("");
@@ -37,7 +38,7 @@ const Register = () => {
     try {
       await axios.post("http://localhost:5000/api/auth/register", formData);
       setSuccess("User registered successfully!");
-      setFormData({ name: "", email: "", password: "", role: "developer" });
+      setFormData({ name: "", email: "", password: "", role: "developer" , employeeId: "" });
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed");
     }
@@ -91,6 +92,15 @@ const Register = () => {
             <option value="developer">Developer</option>
             <option value="admin">Admin</option>
           </select>
+          <input
+            type="text"
+            name="employeeId"
+            placeholder="Employee ID"
+            value={formData.employeeId}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md"
+            required
+          />
 
           <button
             type="submit"

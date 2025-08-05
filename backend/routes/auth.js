@@ -12,8 +12,14 @@ router.post('/login', async (req, res) => {
 
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return res.status(400).json({ message: 'Invalid email or password' });
-
-        res.status(200).json({ message: 'Login successful', user: { id: user._id, name: user.name, role: user.role } });
+           res.cookie("empID", user.employeeId, {
+      httpOnly: false, // make true for security if you don't need client JS to access it
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+      sameSite: "Lax", // "Strict" or "None" depending on your setup
+      secure: false,   // true in production (if HTTPS)
+    });
+        res.status(200).json({ message: 'Login successful', user });
+    
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -21,24 +27,33 @@ router.post('/login', async (req, res) => {
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-    const { name, email, password, role } = req.body;
+    // Destructure all expected fields from the request body
+    const { name, email, password, role, employeeId, token } = req.body;
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Create the new user with all provided fields
         const user = new User({
             name,
             email,
             password: hashedPassword,
-            role: role || 'user'
+            role: role || 'user',
+            employeeId, // Add employeeId
+            tokens: token // Add token to the 'tokens' field
         });
 
         await user.save();
-        res.status(201).json({ message: 'User registered successfully', user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+
+        // Create a user object for the response, excluding the password
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
+        res.status(201).json({ message: 'User registered successfully', user: userResponse });
     } catch (err) {
-        console.error('Registration error:', err); // Add this line
+        console.error('Registration error:', err);
         res.status(500).json({ message: 'Server error' });
     }
 });

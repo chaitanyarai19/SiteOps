@@ -5,6 +5,9 @@ const User = require('../models/User');
 exports.getDashboardStats = async (req, res) => {
   try {
     // Concurrently fetch counts from all relevant collections
+
+    console.log('Dashboard accessed by employee ID:', req.cookies.empID);
+
     const [siteCount, ticketCount, userCount] = await Promise.all([
       Site.countDocuments(),
       Ticket.countDocuments(),
