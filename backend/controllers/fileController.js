@@ -1,6 +1,7 @@
 const File = require("../models/File");
 const fs  = require("fs");
 const path = require("path");
+const User = require("../models/User");
 
 // Upload a new file
 exports.uploadFile = async (req, res) => {
@@ -12,6 +13,7 @@ exports.uploadFile = async (req, res) => {
       sitename,
       fileUrl,
       uploadedAt: new Date(),
+      empID: req.body.empID || null,
     });
 
     res.status(201).json(file);
@@ -23,31 +25,62 @@ exports.uploadFile = async (req, res) => {
 // Get all uploaded files
 exports.getAllFiles = async (req, res) => {
   try {
-    const files = await File.find().sort({ uploadedAt: -1 }); // latest first
+    const empID = req.headers.empid;
+    if (!empID) {
+      return res.status(400).json({ message: "empID missing" });
+    }
+
+    // Find the current logged-in user
+    const currentUser = await User.findOne({ employeeId: empID });
+    if (!currentUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let query = {};
+
+    if (currentUser.role === "superadmin") {
+      // Superadmin can see all files
+      query = {};
+    } else if (currentUser.role === "admin") {
+      // Admin: show only their own files
+      query = { empID: empID };
+    } else {
+      // Developer/Client: show files uploaded by their creator
+      if (currentUser.createdBy) {
+        query = { empID: currentUser.createdBy };
+      } else {
+        query = { empID: empID };
+      }
+    }
+
+    const files = await File.find(query).sort({ uploadedAt: -1 }); // latest first
     res.status(200).json(files);
   } catch (error) {
+    console.error("Error fetching files:", error);
     res.status(500).json({ error: "Unable to fetch files" });
   }
 };
 
-// Delete a file by ID
+
+// DELETE file by ID
 exports.deleteFile = async (req, res) => {
   try {
     const { id } = req.params;
     const file = await File.findById(id);
+    if (!file) return res.status(404).json({ message: "File not found" });
 
-    if (!file) {
-      return res.status(404).json({ error: "File not found" });
+    // Delete from uploads folder
+    const filePath = path.join(__dirname, "../uploads", path.basename(file.fileUrl));
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
     }
 
-    const filepath = path.join(path.resolve(), "uploads", path.basename(file.fileUrl));
-    fs.unlink(filepath, (err) => {
-      if (err) console.warn("File not found in filesystem or already deleted:", filepath);
-    });
+    // Delete from DB
+    await File.findByIdAndDelete(id);
 
-    await file.deleteOne();
-    res.status(200).json({ message: "File deleted successfully" });
+    res.json({ message: "File deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete file", details: error.message });
+    console.error("Error deleting file:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

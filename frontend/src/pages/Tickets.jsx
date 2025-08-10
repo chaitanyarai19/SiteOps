@@ -15,8 +15,9 @@ const Tickets = () => {
   const fetchTickets = async () => {
     try {
       const token = localStorage.getItem("token");
+      const empID = localStorage.getItem("empID");
       const res = await axios.get("http://localhost:5000/api/tickets", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, empID: empID },
       });
       setTickets(res.data);
     } catch (err) {
@@ -27,8 +28,9 @@ const Tickets = () => {
   const fetchSites = async () => {
     try {
       const token = localStorage.getItem("token");
+      const empID = localStorage.getItem("empID");
       const res = await axios.get("http://localhost:5000/api/sites", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, empID: empID },
       });
       setSites(res.data);
     } catch (err) {
@@ -67,9 +69,13 @@ const handleChange = (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/tickets", formData, {
+      const empID = localStorage.getItem("empID");
+      const payload = { ...formData, empID };
+
+      const res = await axios.post("http://localhost:5000/api/tickets", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       console.log("Ticket submitted:", res.data);
       setFormData({ title: "", site: "", description: "" });
       fetchTickets();
@@ -93,8 +99,10 @@ const handleChange = (e) => {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex-grow container mx-auto p-12">
+         {user?.role === "admin" && (
+          <>
         <h2 className="text-2xl font-semibold mb-12">Save a Ticket</h2>
-        {user?.role === "admin" && (
+        
         <form onSubmit={handleSubmit} className="space-y-4 max-w-xxl">
           <input 
             type="text"
@@ -138,17 +146,20 @@ const handleChange = (e) => {
             Submit Ticket
           </button>
         </form>
+        </>
         )}
 
         <h2 className="text-2xl font-semibold my-6">Submitted Tickets</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border border-gray-200">
-            <thead className="bg-gray-100">
+          <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-gradient-to-r from-blue-100 to-blue-200">
               <tr>
                 <th className="p-3 text-left">Issue Type</th>
                 <th className="p-3 text-left">Site</th>
                 <th className="p-3 text-left">Description</th>
-                <th className="p-3 text-left">Action</th>
+                {user?.role === "admin" && (
+                  <th className="p-3 text-left">Action</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -159,14 +170,16 @@ const handleChange = (e) => {
                     {sites.find((s) => s._id === ticket.site)?.location || ticket.site}
                   </td>
                   <td className="p-3">{ticket.description}</td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => handleDelete(ticket._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
-                    >
+                  {user?.role === "admin" && (
+                    <td className="p-3">
+                      <button
+                        onClick={() => handleDelete(ticket._id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                      >
                       🗑️ Delete
                     </button>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

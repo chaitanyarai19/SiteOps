@@ -26,6 +26,7 @@ const dashboardRouter = require('./routes/dashboard');
 const uploadRoutes = require("./routes/uploadRoutes");
 const userRoutes = require('./routes/users');
 const filesRoutes = require("./routes/filesRoutes");
+const RiskRoutes = require("./routes/riskRoutes");
 const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
@@ -40,6 +41,7 @@ app.use('/api/sites', sitesRouter);
 app.use('/api/tickets', ticketsRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use("/api/files", filesRoutes);
+app.use('/api/risks', RiskRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

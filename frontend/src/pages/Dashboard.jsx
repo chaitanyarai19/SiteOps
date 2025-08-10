@@ -19,25 +19,19 @@ const Dashboard = () => {
 
       try {
         const token = localStorage.getItem("token");
-        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const empID = localStorage.getItem("empID");
+
+        const config = { headers: { Authorization: `Bearer ${token}`, empID: empID } };
 
         // Fetch all counts in parallel
-        const [sitesRes, ticketsRes, usersRes, filesRes] = await Promise.all([
+        const [sitesRes, ticketsRes, usersRes, filesRes, risksRes] = await Promise.all([
           axios.get("http://localhost:5000/api/sites", config),
           axios.get("http://localhost:5000/api/tickets", config),
           axios.get("http://localhost:5000/api/users", config),
           axios.get("http://localhost:5000/api/files", config),
+          axios.get("http://localhost:5000/api/risks", config),
         ]);
 
-        function toCamelCase(str) {
-  return str
-    .toLowerCase()
-    .replace(/[^a-zA-Z0-9 ]/g, '') // remove non-alphanumeric characters
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
-      index === 0 ? word.toLowerCase() : word.toUpperCase()
-    )
-    .replace(/\s+/g, '');
-}
 
 
         setStats({
@@ -45,6 +39,7 @@ const Dashboard = () => {
           tickets: ticketsRes.data.length || 0,
           users: usersRes.data.length || 0,
           files: filesRes.data.length || 0,
+          risks: risksRes.data.length || 0,
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -77,24 +72,37 @@ console.log('Dashboard accessed by employee ID:', empID);
             <p className="text-3xl font-bold">{stats.sites}</p>
           </div>
         </a>
-        <a href="/tickets">
-          <div className="bg-green-100 text-green-800 p-6 rounded-lg shadow">
+        {user?.role != 'client' && (
+          <a href="/tickets">
+            <div className="bg-green-100 text-green-800 p-6 rounded-lg shadow">
+              <h2 className="text-lg font-medium">Total Tickets</h2>
+              <p className="text-3xl font-bold">{stats.tickets}</p>
+            </div>
+          </a>
+        )}
+        <a href="/risks">
+          <div className="bg-red-100 text-red-800 p-6 rounded-lg shadow">
             <h2 className="text-lg font-medium">Total Risks</h2>
-            <p className="text-3xl font-bold">{stats.tickets}</p>
+            <p className="text-3xl font-bold">{stats.risks}</p>
           </div>
         </a>
-        <a href="/users">
-          <div className="bg-yellow-100 text-yellow-800 p-6 rounded-lg shadow">
-            <h2 className="text-lg font-medium">Total Users</h2>
-            <p className="text-3xl font-bold">{stats.users}</p>
-          </div>
-        </a>
-        <a href="/files">
+          <a href="/files">
           <div className="bg-purple-100 text-purple-800 p-6 rounded-lg shadow">
             <h2 className="text-lg font-medium">Total Files</h2>
             <p className="text-3xl font-bold">{stats.files}</p>
           </div>
         </a>
+
+        {user?.role === "admin" && (
+            <a href="/users">
+          <div className="bg-yellow-100 text-yellow-800 p-6 rounded-lg shadow">
+            <h2 className="text-lg font-medium">Total Users</h2>
+            <p className="text-3xl font-bold">{stats.users}</p>
+          </div>
+        </a>
+        )}
+     
+      
       </div>
     </div>
   );

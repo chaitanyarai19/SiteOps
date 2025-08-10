@@ -3,22 +3,44 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
-// Get all users
+// GET all users with role-based filtering
 router.get('/', async (req, res) => {
-    try {
-        const users = await User.find();
-        res.json(users);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+  try {
+    const empID = req.headers.empid;
+    if (!empID) {
+      return res.status(400).json({ message: "empID missing" });
     }
+
+    const currentUser = await User.findOne({ employeeId: empID });
+    if (!currentUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let users = [];
+
+    if (currentUser.role === "superadmin") {
+      // Show all users
+      users = await User.find();
+    } else if (currentUser.role === "admin") {
+      // Show only users created by this admin
+      users = await User.find({ createdBy: empID });
+    } else {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
+
 
 // Create a new user
 router.post('/', async (req, res) => {
-    const { name, email, password, role, employeeId } = req.body;
+    const { name, email, password, role, employeeId, createdBy } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ name, email, password: hashedPassword, role, employeeId });
+        const user = new User({ name, email, password: hashedPassword, role, employeeId, createdBy });
         const newUser = await user.save();
         const userResponse = newUser.toObject();
         delete userResponse.password;

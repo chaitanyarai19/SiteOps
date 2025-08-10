@@ -22,10 +22,16 @@ const Header = () => {
         <Link to="/dashboard">Home</Link>
          <Link to="/sites">Sites</Link>
         <Link to="/risks">Risks</Link>
+        <Link to="/files">Files</Link>
+
+        {user?.role !== 'client' && (
+          <>
+            <Link to="/tickets">Tickets</Link>
+          </>
+        )}
         {user?.role === 'admin' && (
           <>
             <Link to="/users">Users</Link>
-            <Link to="/files">Files</Link>
             <Link to="/register">Register</Link>
             
           </>

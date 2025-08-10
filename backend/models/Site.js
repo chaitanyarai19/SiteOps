@@ -5,7 +5,7 @@ const siteSchema = new mongoose.Schema({
     location: String,
     description: String,
     status: { type: String, default: 'active' },
-    empID: { type: String, required: true },
+    empID: { type: String, required: false},
     createdAt: { type: Date, default: Date.now }
 });
 

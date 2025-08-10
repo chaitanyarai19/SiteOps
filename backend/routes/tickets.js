@@ -1,16 +1,48 @@
 const express = require('express');
 const router = express.Router();
 const Ticket = require('../models/Ticket');
+const User = require("../models/User");
 
 // Get all tickets
-router.get('/', async (req, res) => {
-    try {
-        const tickets = await Ticket.find();
-        res.json(tickets);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+router.get("/", async (req, res) => {
+  try {
+    const empID = req.headers.empid;
+    if (!empID) {
+      return res.status(400).json({ message: "empID missing" });
     }
+
+    // Find current logged-in user
+    const currentUser = await User.findOne({ employeeId: empID });
+    if (!currentUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let query = {};
+
+    if (currentUser.role === "superadmin") {
+      // Superadmin: see all tickets
+      query = {};
+    } else if (currentUser.role === "admin") {
+      // Admin: see only tickets they created
+      query = { empID: empID };
+    } else {
+      // Developer or Client: see tickets where empID matches their creator's employeeId
+      if (currentUser.createdBy) {
+        query = { empID: currentUser.createdBy };
+      } else {
+        query = { empID: empID };
+      }
+    }
+
+    const tickets = await Ticket.find(query);
+    res.json(tickets);
+  } catch (err) {
+    console.error("Error fetching tickets:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
+
+
 
 // Create a new ticket
 router.post('/', async (req, res) => {

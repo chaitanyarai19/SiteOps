@@ -28,7 +28,8 @@ router.post('/login', async (req, res) => {
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
     // Destructure all expected fields from the request body
-    const { name, email, password, role, employeeId, token } = req.body;
+    const empID = req.headers.empid;
+    const { name, email, password, role, employeeId, createdBy, token } = req.body;
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ message: 'User already exists' });
@@ -42,6 +43,7 @@ router.post('/register', async (req, res) => {
             password: hashedPassword,
             role: role || 'user',
             employeeId, // Add employeeId
+            createdBy: createdBy || empID, // Use empID from headers if createdBy is not provided
             tokens: token // Add token to the 'tokens' field
         });
 

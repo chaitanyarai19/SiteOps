@@ -9,9 +9,10 @@ const Users = () => {
 
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
+    const empID = localStorage.getItem("empID");
     try {
       const res = await axios.get("http://localhost:5000/api/users", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, empID: empID },
       });
       setUsers(res.data);
     } catch (err) {
@@ -20,15 +21,11 @@ const Users = () => {
   };
 
   useEffect(() => {
- if (!user) {
-   // navigate("/"); // Redirect to homepage/login if not logged in
-    return;
-  }
-      fetchUsers();
-
+    if (!user) return;
+    fetchUsers();
   }, [user]);
-  
-    if (!user) {
+
+  if (!user) {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-semibold text-red-600">
@@ -37,7 +34,6 @@ const Users = () => {
       </div>
     );
   }
-  console.log(users.role);
 
   const handleRoleChange = async (id, newRole) => {
     const token = localStorage.getItem("token");
@@ -79,38 +75,50 @@ const Users = () => {
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
-              {user?.role === "admin" && (
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {users.map((u) => (
-              <tr key={u._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-800">{u.name}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{u.email}</td>
-                <td className="px-6 py-4 text-sm capitalize text-gray-800">{u.role}</td>
-                {user?.role === "admin" && (
-                <td className="px-6 py-4 flex items-center gap-3">
-                  <select
-                    value={u.role}
-                    onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                    className="p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="client">Client</option>
-                    <option value="developer">Developer</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <button
-                    onClick={() => handleDelete(u._id)}
-                    className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-md transition"
-                  >
-                    Delete
-                  </button>
-                </td>
-                )}
-              </tr>
-            ))}
+            {users.map((u) => {
+              const isSelf = u.employeeId === user.employeeId;
+              const isSuperAdmin = u.role === "superadmin";
+              const isAdmin = u.role === "admin";
+
+              return (
+                <tr key={u._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm text-gray-800">{u.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{u.email}</td>
+                  <td className="px-6 py-4 text-sm capitalize text-gray-800">{u.role}</td>
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    {/* Restrict actions */}
+                    {(
+                      // Superadmin can't edit/delete superadmin record
+                      (user.role === "superadmin" && !isSuperAdmin) ||
+                      // Admin can't edit/delete own record or other admins
+                      (user.role === "admin" && !isSelf && !isAdmin)
+                    ) && (
+                      <>
+                        <select
+                          value={u.role}
+                          onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                          className="p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                          {user.role === "superadmin" && <option value="admin">Admin</option>}
+                          <option value="developer">Developer</option>
+                          <option value="client">Client</option>
+                        </select>
+                        <button
+                          onClick={() => handleDelete(u._id)}
+                          className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-md transition"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { create } = require("./File");
 
 const userSchema = new mongoose.Schema({
   tokens: { type: String },
@@ -7,6 +8,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   role: { type: String, default: "admin" },
   employeeId: { type: String, unique: true },
+  createdBy: { type: String },
   createdAt: { type: Date, default: Date.now }
 });
 

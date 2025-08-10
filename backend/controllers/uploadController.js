@@ -14,6 +14,7 @@ exports.uploadFile = async (req, res) => {
     const newFile = new File({
       sitename,
       fileUrl,
+      empID: req.body.empID || null,
     });
 
     await newFile.save();

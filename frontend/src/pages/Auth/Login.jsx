@@ -23,7 +23,7 @@ const Login = () => {
       const res = await axios.post("http://localhost:5000/api/auth/login", formData); // Update this if your backend URL is different
       const { user, token } = res.data;
       login(user, token);
-      
+      localStorage.setItem("empID", user.employeeId);
       navigate("/dashboard");
     } catch (err) {
       console.error("Login error: ", err);

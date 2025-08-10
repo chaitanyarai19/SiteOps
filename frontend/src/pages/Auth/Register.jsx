@@ -4,7 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import axios from "axios";
 
 const Register = () => {
-  useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -12,19 +12,11 @@ const Register = () => {
     password: "",
     role: "developer", // default role
     employeeId: "",
+    createdBy: "",
   });
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // 🔒 Only allow if logged-in user is admin
-  // if (!user || user.role !== "admin") {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen text-xl font-semibold">
-  //       Access Denied — Admins only
-  //     </div>
-  //   );
-  // }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,13 +28,27 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", formData);
+      const empID = localStorage.getItem("empID");
+      await axios.post("http://localhost:5000/api/auth/register", formData, {
+        headers: {
+          empID: empID, 
+        },
+      });
       setSuccess("User registered successfully!");
-      setFormData({ name: "", email: "", password: "", role: "developer" , employeeId: "" });
+      setFormData({ name: "", email: "", password: "", role: "developer" , employeeId: "", createdBy: empID });
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed");
     }
   };
+    if (!user) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-semibold text-red-600">
+          🚫 You don’t have access. Please login to continue.
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -89,8 +95,16 @@ const Register = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md"
           >
-            <option value="developer">Developer</option>
-            <option value="admin">Admin</option>
+            {user?.role === "superadmin" && (
+              <option value="admin">Admin</option>
+            )}
+            {user?.role !== "superadmin" && (
+              <>
+               <option value="developer">Developer</option>
+                <option value="client">Client</option>
+                </>
+            )}
+           
           </select>
           <input
             type="text"

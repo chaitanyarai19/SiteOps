@@ -9,6 +9,10 @@ const FileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+    empID: {
+    type: String,
+    required: false,
+  },
   uploadedAt: {
     type: Date,
     default: Date.now,

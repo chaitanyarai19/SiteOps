@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Register from './pages/Auth/Register';
 import Sites from './pages/Sites';
 import Tickets from './pages/Tickets';
+import Risks from './pages/Risks';
 import Users from './pages/Users';
 import FileUploader from './pages/FileUploader';
 import Header from './pages/Header';
@@ -22,7 +23,8 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/sites" element={<Sites />} />
-                <Route path="/risks" element={<Tickets />} />
+                <Route path="/tickets" element={<Tickets />} />
+                <Route path="/risks" element={<Risks />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/files" element={<FileUploader />} />
 
