@@ -29,7 +29,7 @@ const Header = () => {
             <Link to="/tickets">Tickets</Link>
           </>
         )}
-        {user?.role === 'admin' && (
+        {user?.role === 'admin' || user?.role === 'superadmin' && (
           <>
             <Link to="/users">Users</Link>
             <Link to="/register">Register</Link>

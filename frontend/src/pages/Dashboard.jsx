@@ -93,7 +93,7 @@ console.log('Dashboard accessed by employee ID:', empID);
           </div>
         </a>
 
-        {user?.role === "admin" && (
+        {user?.role === "superadmin" && (
             <a href="/users">
           <div className="bg-yellow-100 text-yellow-800 p-6 rounded-lg shadow">
             <h2 className="text-lg font-medium">Total Users</h2>

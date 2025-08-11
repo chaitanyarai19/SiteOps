@@ -19,20 +19,24 @@ router.get('/', async (req, res) => {
     let users = [];
 
     if (currentUser.role === "superadmin") {
-      // Show all users
-      users = await User.find();
-    } else if (currentUser.role === "admin") {
+      // Show only admins
+      users = await User.find({ role: "admin" });
+    } 
+    else if (currentUser.role === "admin" || currentUser.role === "developer" || currentUser.role === "client") {
       // Show only users created by this admin
       users = await User.find({ createdBy: empID });
-    } else {
+    } 
+    else {
       return res.status(403).json({ message: "Access denied" });
     }
 
     res.json(users);
   } catch (err) {
+    console.error("Error fetching users:", err);
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 // Create a new user

@@ -10,7 +10,7 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    role: "developer", // default role
+    role: "",
     employeeId: "",
     createdBy: "",
   });
@@ -35,7 +35,7 @@ const Register = () => {
         },
       });
       setSuccess("User registered successfully!");
-      setFormData({ name: "", email: "", password: "", role: "developer" , employeeId: "", createdBy: empID });
+      setFormData({ name: "", email: "", password: "", role: "", employeeId: "", createdBy: empID });
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed");
     }

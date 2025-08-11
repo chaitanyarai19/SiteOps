@@ -41,7 +41,7 @@ router.post('/register', async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role: role || 'user',
+            role,
             employeeId, // Add employeeId
             createdBy: createdBy || empID, // Use empID from headers if createdBy is not provided
             tokens: token // Add token to the 'tokens' field

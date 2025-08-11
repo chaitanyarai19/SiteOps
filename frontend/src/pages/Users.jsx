@@ -103,9 +103,16 @@ const Users = () => {
                           onChange={(e) => handleRoleChange(u._id, e.target.value)}
                           className="p-2 border border-gray-300 rounded-md text-sm text-gray-700 focus:ring-blue-500 focus:border-blue-500"
                         >
-                          {user.role === "superadmin" && <option value="admin">Admin</option>}
-                          <option value="developer">Developer</option>
-                          <option value="client">Client</option>
+                          {user.role === "superadmin" && (
+                            <option value="admin">Admin</option>
+                          )}
+                          {user.role === "admin" && (
+                            <>
+                              <option value="developer">Developer</option>
+                              <option value="client">Client</option>
+                            </>
+                          )}
+
                         </select>
                         <button
                           onClick={() => handleDelete(u._id)}
