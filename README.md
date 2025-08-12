@@ -10,18 +10,15 @@ Built for internal IT teams, dev agencies, and SaaS infrastructure monitoring �
 - [✨ Features](#-features)
 - [🛠 Tech Stack](#-tech-stack)
 - [👥 User Roles](#-user-roles)
-- [🖼 Screenshots](#-screenshots)
 - [⚙️ Setup & Installation](#️-setup--installation)
 - [🌐 API Endpoints](#-api-endpoints)
 - [🔒 Authentication & Cookies](#-authentication--cookies)
-- [📂 Project Structure](#-project-structure)
 - [🚀 Future Enhancements](#-future-enhancements)
-- [📞 Contact](#-contact)
 
 ---
 
 ## 🌟 Overview
-**SiteOps Manager** helps dev and support teams track the **health, credentials, and tasks** for multiple websites.  
+**SiteOps Manager** helps dev and support teams track the **Credentials, Tickets, Risks and Tasks** for multiple websites.  
 Everything is accessible from a single dashboard — with clear **role-based permissions**.
 
 **Core Modules:**
@@ -71,16 +68,9 @@ Everything is accessible from a single dashboard — with clear **role-based per
 
 ---
 
-## 🖼 Screenshots
-📷 _UI screenshots coming soon_
-
----
-
 ## ⚙️ Setup & Installation
 
 ### 1️⃣ Clone Repository
-
-* clone repository
 
 ```bash
 cd siteops
@@ -88,7 +78,7 @@ cd siteops
 
 ### 2️⃣ Backend Setup
 ```bash
-cd backend
+cd ../backend
 npm install
 ```
 
@@ -122,7 +112,7 @@ JWT_SECRET=your_jwt_secret
 ### 6️⃣ Start Backend
 ```bash
 cd backend
-npm run dev
+nodemon server.js
 ```
 
 ### 7️⃣ Start Frontend
@@ -158,28 +148,6 @@ npm run dev
 
 ---
 
-## 📂 Project Structure
-```
-siteops-manager/
-│
-├── backend/
-│   ├── routes/
-│   ├── models/
-│   ├── controllers/
-│   └── uploads/
-│
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   ├── components/
-│   │   ├── context/
-│   │   └── App.jsx
-│
-└── README.md
-```
-
----
-
 ## 🚀 Future Enhancements
 - ✅ SSL/Hosting expiry tracking  
 - 🔔 Email notifications for tickets  
@@ -189,10 +157,4 @@ siteops-manager/
 
 ---
 
-## 📞 Contact
-👨‍💻 **Chaitanya Rai**  
-📧 [Email Me](mailto:chaitanyarai.work@gmail.com)  
-🌐 [LinkedIn Profile](https://www.linkedin.com)
 
----
-_This project is licensed under the MIT License._
