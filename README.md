@@ -151,8 +151,7 @@ npm run dev
 ## 🚀 Future Enhancements
 - ✅ SSL/Hosting expiry tracking  
 - 🔔 Email notifications for tickets  
-- 🌐 Site uptime monitoring  
-- 🔐 AES-based credential encryption  
+- 🌐 Site uptime monitoring   
 - 📜 Admin activity logs  
 
 ---
