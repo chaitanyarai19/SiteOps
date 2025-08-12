@@ -29,16 +29,14 @@ const Header = () => {
             <Link to="/tickets">Tickets</Link>
           </>
         )}
-        {user?.role === 'admin' || user?.role === 'superadmin' && (
+        {(user?.role === 'superadmin' || user?.role === 'admin') && (
           <>
             <Link to="/users">Users</Link>
             <Link to="/register">Register</Link>
-            
           </>
         )}
-       
-        
-    
+
+
         {user ? (
           <button
             onClick={handleLogout}

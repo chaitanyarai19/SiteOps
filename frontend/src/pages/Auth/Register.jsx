@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-// import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../../context/AuthContext';
 import axios from "axios";
 
@@ -12,7 +11,6 @@ const Register = () => {
     password: "",
     role: "",
     employeeId: "",
-    createdBy: "",
   });
 
   const [error, setError] = useState("");
@@ -24,23 +22,34 @@ const Register = () => {
     setSuccess("");
   };
 
-  // 📤 Submit form to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const empID = localStorage.getItem("empID");
-      await axios.post("http://localhost:5000/api/auth/register", formData, {
-        headers: {
-          empID: empID, 
-        },
+
+      const payload = {
+        ...formData,
+        createdBy: empID, // set dynamically
+      };
+
+      await axios.post("http://localhost:5000/api/auth/register", payload, {
+        headers: { empID },
       });
+
       setSuccess("User registered successfully!");
-      setFormData({ name: "", email: "", password: "", role: "", employeeId: "", createdBy: empID });
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        role: "",
+        employeeId: "",
+      });
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed");
     }
   };
-    if (!user) {
+
+  if (!user) {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-semibold text-red-600">
@@ -48,6 +57,14 @@ const Register = () => {
         </h1>
       </div>
     );
+  }
+
+  // Define allowed roles dynamically
+  let roleOptions = [];
+  if (user.role === "superadmin") {
+    roleOptions = ["admin"];
+  } else if (user.role === "admin") {
+    roleOptions = ["developer", "client"];
   }
 
   return (
@@ -94,18 +111,16 @@ const Register = () => {
             value={formData.role}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md"
+            required
           >
-            {user?.role === "superadmin" && (
-              <option value="admin">Admin</option>
-            )}
-            {user?.role !== "superadmin" && (
-              <>
-               <option value="developer">Developer</option>
-                <option value="client">Client</option>
-                </>
-            )}
-           
+            <option value="">Select Role</option>
+            {roleOptions.map((role) => (
+              <option key={role} value={role}>
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+              </option>
+            ))}
           </select>
+
           <input
             type="text"
             name="employeeId"

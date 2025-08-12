@@ -84,7 +84,7 @@ const FileUploader = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       {/* Upload Form */}
-      {user?.role === 'admin' || user?.role === 'developer' && (
+      {user.role !== "client" && user.role !== "superadmin" && (
         <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-xl mb-10">
           <h2 className="text-2xl font-bold mb-6 text-center">📁 File Uploader</h2>
 
